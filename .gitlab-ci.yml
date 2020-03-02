@@ -1,0 +1,38 @@
+stages:
+  - development
+  - production
+
+variables:
+  GIT_SUBMODULE_STRATEGY: recursive
+  IMAGE_TAG: $CI_REGISTRY_IMAGE:$CI_COMMIT_REF_NAME
+  REGISTRY: $CI_REGISTRY_IMAGE
+
+build:
+  stage: development
+  tags:
+    - shell-build-test
+  only:
+    - master
+  interruptible: false
+  script:
+    - docker login -u gitlab-ci-token -p "$CI_JOB_TOKEN" $REGISTRY
+    - docker-compose build --pull app
+    - docker-compose push app
+
+deploy:
+  stage: production
+  retry: 2
+  tags:
+    - shell-production
+  only:
+    - master
+  when: manual
+  interruptible: false
+  script:
+    - docker login -u gitlab-ci-token -p "$CI_JOB_TOKEN" $REGISTRY
+    - docker-compose pull app
+    - docker-compose down
+    - docker-compose up -d --no-build app
+
+# vim: tabstop=2 softtabstop=0 expandtab shiftwidth=2 smarttab
+

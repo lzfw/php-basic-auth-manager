@@ -2,17 +2,15 @@ version: '3.5'
 
 services:
   app:
-    image: docker.leo9000.de/lzfw/php-apache2-basic-auth-manager
+    image: ${IMAGE_NAME}
     build:
       context: .
       dockerfile: Dockerfile
     restart: always
-    #environment:
-      #VIRTUAL_HOST: '${VIRTUAL_HOST:-passwords.halle.tech}'
-      #LETSENCRYPT_HOST: '${VIRTUAL_HOST:-passwords.halle.tech}'
-      #LETSENCRYPT_EMAIL: '${LETSENCRYPT_EMAIL}'
-    ports:
-      - 80:80
+    environment:
+      - VIRTUAL_HOST
+      - LETSENCRYPT_HOST=${VIRTUAL_HOST}
+      - LETSENCRYPT_EMAIL
     volumes:
       - ./config.yml:/var/www/config.yml
       - passwords:/var/htsecrets/
@@ -21,6 +19,11 @@ volumes:
   passwords:
     external:
       name: frontend-proxy_passwords
+
+networks:
+  proxy-network:
+    name: global-proxy-network
+    external: true
 
 # vim: tabstop=2 softtabstop=0 expandtab shiftwidth=2 smarttab
 
