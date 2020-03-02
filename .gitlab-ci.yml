@@ -7,6 +7,10 @@ variables:
   IMAGE_TAG: $CI_REGISTRY_IMAGE:$CI_COMMIT_REF_NAME
   REGISTRY: $CI_REGISTRY_IMAGE
 
+before_script:
+  - ln -f /opt/config/php-apache2-basic-auth-manager-config.yml config.yml
+  - docker login -u gitlab-ci-token -p "$CI_JOB_TOKEN" $REGISTRY
+
 build:
   stage: development
   tags:
@@ -15,7 +19,6 @@ build:
     - master
   interruptible: false
   script:
-    - docker login -u gitlab-ci-token -p "$CI_JOB_TOKEN" $REGISTRY
     - docker-compose build --pull app
     - docker-compose push app
 
@@ -29,7 +32,6 @@ deploy:
   when: manual
   interruptible: false
   script:
-    - docker login -u gitlab-ci-token -p "$CI_JOB_TOKEN" $REGISTRY
     - docker-compose pull app
     - docker-compose down
     - docker-compose up -d --no-build app
