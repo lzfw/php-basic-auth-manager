@@ -2,7 +2,8 @@ AuthName "Members Area"
 AuthType Basic
 AuthUserFile /var/htsecrets/.htpasswd
 AuthGroupFile /var/htsecrets/.htgroups
-<Limit GET POST>
-  require user superuser
-  require group writer
-</Limit>
+
+require user superuser
+# or
+# require group admin
+

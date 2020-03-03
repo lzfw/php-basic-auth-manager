@@ -21,6 +21,5 @@ RUN set -ex; \
     && rm -rf /var/lib/apt/lists/* \
     && mkdir -p /var/www/sessions \
     && chown www-data /var/www/sessions \
-    && echo "[global]\ndisplay_errors = Off" > /usr/local/etc/php/conf.d/php-password-manager.ini \
-    && sed -i -E 's/\s*print_r\(\s*\$users\s*\)\s*;//' /var/www/vendor/rafaelgou/php-apache2-basic-auth/src/Apache2BasicAuth/Model/Group.php
+    && echo "[global]\ndisplay_errors = Off" > /usr/local/etc/php/conf.d/php-password-manager.ini
 

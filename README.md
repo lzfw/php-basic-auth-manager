@@ -10,6 +10,21 @@ lib.
 ![Screenshot](screenshot.png)
 
 
+## Docker
+
+```
+wget -O docker-compose.yaml https://raw.githubusercontent.com/lzfw/php-apache2-basic-auth-manager/master/docker-compose.standalone.yaml
+wget -O config.yml https://github.com/lzfw/php-apache2-basic-auth-manager/blob/master/config.yml.dist
+docker-compose up -d --no-build
+
+docker-compose exec app bash
+htpasswd -cB /var/htsecrets/.htpasswd superuser
+chown www-data:www-data /var/htsecrets/.htpasswd
+
+echo 'admin: superuser' > /var/htsecrets/.htgroups
+chown www-data:www-data /var/htsecrets/.htgroups
+```
+
 ## Install
 
 1) Clone the repository under a web:
@@ -21,7 +36,7 @@ Notes:
 
 ```bash
 cd /var/www
-git clone https://github.com/rafaelgou/php-apache2-basic-auth-manager.git
+git clone https://github.com/lzfw/php-apache2-basic-auth-manager.git
 cd php-apache2-basic-auth-manager
 composer install
 ```
@@ -41,11 +56,11 @@ right paths for `.htpasswd`  and `.htgroups` files.
 
 ```yml
 # Base URL
-baseUrl: http://localhost/php-apache2-basic-auth-manager
+baseUrl: http://localhost
 
 # Path to Apache2 files
-htpasswd: '/home/rafael/Dev/Rgou/.htpasswd'
-htgroups: '/home/rafael/Dev/Rgou/.htgroups'
+htpasswd: '/var/htsecrets/.htpasswd'
+htgroups: '/var/htsecrets/.htgroups'
 
 # Debug
 debug: false
@@ -67,15 +82,15 @@ They can be anywhere, but must be readable by webserver user (e.g. www-data).
 You need to create a initial admin user:
 
 ```bash
-htpasswd -cB /var/www/.htpasswd superuser
-chown www-data:www-data /var/www/.htpasswd
+htpasswd -cB /var/htsecrets/.htpasswd superuser
+chown www-data:www-data /var/htsecrets/.htpasswd
 ```
 
 
 
 ```bash
-echo 'admin: superuser' > /var/www/.htgroups
-chown www-data:www-data /var/www/.htgroups
+echo 'admin: superuser' > /var/htsecrets/.htgroups
+chown www-data:www-data /var/htsecrets/.htgroups
 ```
 
 5) Create .htaccess file for the system
@@ -91,15 +106,21 @@ AuthName "Members Area"
 AuthType Basic
 AuthUserFile /var/www/.htpasswd
 AuthGroupFile /var/www/.htgroups
-<Limit GET POST>
-    require group admin
-    # or
-    # require user superuser
-</Limit>
+require group admin
+# or
+# require user superuser
 ```
 
-6) Now you can access
+6) Enable required modules
 
-http://localhost/php-apache2-basic-auth-manager
+```
+sudo a2enmod authz_core authz_groupfile rewrite
+sudo service apache2 reload
+```
+
+7) Now you can access
+
+http://localhost
 
 Use the user/password created above.
+
