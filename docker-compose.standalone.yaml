@@ -2,7 +2,7 @@ version: '3.5'
 
 services:
   app:
-    image: docker.pkg.github.com/lzfw/php-apache2-basic-auth-manager/app:latest
+    image: docker.pkg.github.com/lzfw/php-basic-auth-manager/app:latest
     build:
       context: .
       dockerfile: Dockerfile
